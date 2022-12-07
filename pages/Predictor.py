@@ -76,6 +76,8 @@ def batch_predictor(df):
     st.dataframe(final_df)
 
 def display_single_shap(df, name):
+    st.markdown("<h5 style='text-align: center; padding: 12px;color: #4f4f4f;'>Model Explanation : XAI (Explainable AI)</h5>",
+                            unsafe_allow_html = True)
     temp = df.loc[df['name'] == name]
     res = temp.iloc[:, 1:]
     shap.initjs()              
@@ -179,7 +181,7 @@ def main():
 
             names = tuple(df['name'])
 
-            st.markdown("<h5 style='text-align: center; padding: 12px;color: #4f4f4f;'>Single Patient Model Explanation : XAI (Explainable AI)</h5>",
+            st.markdown("<h5 style='text-align: center; padding: 12px;color: #4f4f4f;'>Single Patient Model Explanation</h5>",
                             unsafe_allow_html = True)
                 
             single_patient = st.selectbox('Select Patient', names)
