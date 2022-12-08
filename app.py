@@ -74,7 +74,9 @@ def batch_predictor(df):
     multi_patient_explainer(temp)
     st.markdown("<h4 style='text-align: center; color: #4f4f4f;'>Patient Ranking by High Risk %</h4>",
                 unsafe_allow_html = True)
-    st.dataframe(final_df)
+    x, y, z = st.columns(3)
+    with y:
+        st.dataframe(final_df)
 
 def display_single_shap(df, name):
     st.markdown("<h5 style='text-align: center; padding: 12px;color: #4f4f4f;'>Model Explanation : XAI (Explainable AI)</h5>",
