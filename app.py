@@ -162,8 +162,8 @@ def main():
             weight = st.number_input('Weight (kg)', step = 1, min_value = 30)
             bmi = st.number_input("BMI", step = 0.5, min_value = 15.0)
             systolic_bp = st.slider('Systolic BP', min_value = 70, max_value = 160, step = 10)
-            blood_sugar = st.number_input('Blood Sugar Level', min_value = 5.9, max_value = 34.6)
-            body_temp = st.number_input("Body Temperature (°F)", step = 0.5, min_value = 98.3)   
+            blood_sugar = st.number_input('Blood Sugar Level')
+            body_temp = st.number_input("Body Temperature (°F)", step = 1, min_value = 98)   
         
         feature_names = ['systolic_bp', 'weight', 'bmi', 'age', 'stillborn', 'blood_sugar', 'body_temp', 'miscarriage', 'parity', 'gravida']
         feature_values = [systolic_bp, weight, bmi, age, stillborn, blood_sugar, body_temp, miscarriage, parity, gravida]
