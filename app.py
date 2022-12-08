@@ -66,7 +66,7 @@ def batch_predictor(df):
     proba_df = pd.DataFrame(model.predict_proba(temp), columns = ['Low Risk %', 'High Risk %'])
     df['prediction'] = batch_predicitons
     df['prediction'] = df['prediction'].map({0 : 'Low Risk', 1 : 'High Risk'})
-    st.success("Batch Predictions Successful")
+    st.success("Results Generated")
     res_df = df[['name', 'prediction']]
     comb_df = pd.concat([res_df, proba_df], axis = 1)
     comb_df = comb_df.sort_values(by = ['High Risk %'], ascending = False)
@@ -192,17 +192,15 @@ def main():
         if uploader:
             df = pd.read_excel(uploader)
             batch_predictor(df)
+            names = tuple(df['name'])
             
-            if st.button("Single Patient Results"):
+            st.write(" ")
+            st.markdown("<h4 style='text-align: center; padding: 12px;color: #4f4f4f;'>Single Patient Model Explanation</h4>",
+                        unsafe_allow_html = True)
+            single_patient = st.selectbox('Select Patient', names)
+            st.write(" ")
 
-                st.dataframe(df)
-                names = tuple(df['name'])
-
-                st.markdown("<h5 style='text-align: center; padding: 12px;color: #4f4f4f;'>Single Patient Model Explanation</h5>",
-                                unsafe_allow_html = True)
-                    
-                single_patient = st.selectbox('Select Patient', names)
-
+            if st.button("Show Results"):
                 display_single_shap(df, single_patient)                
                 
 
