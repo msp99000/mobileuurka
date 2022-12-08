@@ -130,7 +130,7 @@ def main():
 
     st.write("")
     
-    img = Image.open('logo2.png')
+    img = Image.open('logo.png')
     p, q ,r = st.columns(3)
     with q:
         st.image(img)
