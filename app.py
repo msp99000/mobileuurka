@@ -30,7 +30,11 @@ def prediction(systolic_bp, weight, bmi, age, stillborn, blood_sugar, body_temp,
         miscarriage = 0
     if miscarriage == 'Yes':
         miscarriage = 1
-    pred =  model.predict([[systolic_bp, weight, bmi, age, stillborn, blood_sugar, body_temp, miscarriage, parity, gravida]])
+
+    feature_names = ['SystolicBP', 'Weight (kg)', 'BMI', 'Age', 'stillborn', 'BS (Blood sugar)', 'BodyTemp',  'Miscarriage', 'Parity', 'Gravida']
+    temp_df = pd.DataFrame([[systolic_bp, weight, bmi, age, stillborn, blood_sugar, body_temp, miscarriage, parity, gravida]], columns = feature_names)
+
+    pred =  model.predict(temp_df)
     return pred[0]
 
 def predict_probability(systolic_bp, weight, bmi, age, stillborn, blood_sugar, body_temp, miscarriage, parity, gravida):
