@@ -8,37 +8,37 @@ def streamlit_style():
 
     st.set_option('deprecation.showPyplotGlobalUse', False)
 
-    st.set_page_config(initial_sidebar_state = "collapsed", layout = 'centered')
+    st.set_page_config(initial_sidebar_state = "collapsed", layout = 'centered', page_icon = 'logo.png', page_title = 'Mobile Uurka')
 
     # Remove whitespace from the top of the page and sidebar
-    st.markdown("""
-        <style>
-               .css-18e3th9 {
-                    padding-top: 0rem;
-                    padding-bottom: 10rem;
-                    padding-left: 5rem;
-                    padding-right: 5rem;
-                }
-               .css-1d391kg {
-                    padding-top: 0rem;
-                    padding-right: 1rem;
-                    padding-bottom: 0rem;
-                    padding-left: 1rem;
-                }
-        </style>
-        """, unsafe_allow_html=True)
+    # st.markdown("""
+    #     <style>
+    #            .css-18e3th9 {
+    #                 padding-top: 0rem;
+    #                 padding-bottom: 10rem;
+    #                 padding-left: 5rem;
+    #                 padding-right: 5rem;
+    #             }
+    #            .css-1d391kg {
+    #                 padding-top: 0rem;
+    #                 padding-right: 1rem;
+    #                 padding-bottom: 0rem;
+    #                 padding-left: 1rem;
+    #             }
+    #     </style>
+    #     """, unsafe_allow_html=True)
 
-    # st.markdown(
-    #         f'''
-    #         <style>
-    #             .reportview-container .sidebar-content {{
-    #                 padding-top: {1}rem;
-    #             }}
-    #             .reportview-container .main .block-container {{
-    #                 padding-top: {1}rem;
-    #             }}
-    #         </style>
-    #         ''',unsafe_allow_html=True)
+    st.markdown(
+            f'''
+            <style>
+                .reportview-container .sidebar-content {{
+                    padding-top: {0}rem;
+                }}
+                .reportview-container .main .block-container {{
+                    padding-top: {0}rem;
+                }}
+            </style>
+            ''',unsafe_allow_html=True)
 
     st.markdown("""
                 <style>
