@@ -1,5 +1,6 @@
 import streamlit as st
-import streamlit_authenticator as stauth
+import streamlit.components.v1 as components
+
 
 # ---- HIDE STREAMLIT STYLE ----
 
@@ -7,7 +8,7 @@ def streamlit_style():
 
     st.set_option('deprecation.showPyplotGlobalUse', False)
 
-    st.set_page_config(initial_sidebar_state = "collapsed")
+    st.set_page_config(initial_sidebar_state = "collapsed", layout = 'centered')
 
     # Remove whitespace from the top of the page and sidebar
     st.markdown("""
@@ -19,13 +20,25 @@ def streamlit_style():
                     padding-right: 5rem;
                 }
                .css-1d391kg {
-                    padding-top: 3.5rem;
+                    padding-top: 0rem;
                     padding-right: 1rem;
-                    padding-bottom: 3.5rem;
+                    padding-bottom: 0rem;
                     padding-left: 1rem;
                 }
         </style>
         """, unsafe_allow_html=True)
+
+    # st.markdown(
+    #         f'''
+    #         <style>
+    #             .reportview-container .sidebar-content {{
+    #                 padding-top: {1}rem;
+    #             }}
+    #             .reportview-container .main .block-container {{
+    #                 padding-top: {1}rem;
+    #             }}
+    #         </style>
+    #         ''',unsafe_allow_html=True)
 
     st.markdown("""
                 <style>
@@ -49,3 +62,17 @@ def streamlit_style():
         
         """,
         unsafe_allow_html=True)
+
+    hvar = """
+    
+            <script>
+            
+                var elements = window.parents.document.querySelectorAll('.streamlit-expanderHeader')
+                elements[0].style.color = 'rgba(83, 36, 118, 1)';
+                elements[0].style.fontFamily = 'Didot';
+                elements[0].style.fontStyle = 'x-large';
+                elements[0].style.fontWeight = 'bold';
+
+            </script>
+    
+    """

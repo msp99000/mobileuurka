@@ -8,7 +8,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import plotly.express as px
 import shap
-import streamlit.components.v1 as components
+from PIL import Image
+
 
 streamlit_style()
 
@@ -79,7 +80,7 @@ def display_single_shap(df, name):
     st.markdown("<h5 style='text-align: center; padding: 12px;color: #4f4f4f;'>Model Explanation : XAI (Explainable AI)</h5>",
                             unsafe_allow_html = True)
     temp = df.loc[df['name'] == name]
-    res = temp.iloc[:, 1:]
+    res = temp.iloc[:, 1:-1]
     shap.initjs()              
     shap_values = shap.TreeExplainer(model).shap_values(res)              
     st.pyplot(shap.force_plot(shap.TreeExplainer(model).expected_value[0], shap_values[0], res, matplotlib=True,show=False))  # type: ignore
@@ -119,30 +120,42 @@ def send_alert(name, pred):
 
 def main():
     # Front end elements of the web page 
-    predictor_heading = '''
-                        <div> 
-                        <h1 style ="color:#4f4f4f;text-align:center;padding:25px;">MobileUurka AI</h1> 
-                        </div> 
-                        '''
+    heading = '''
+                <div> 
+                <h1 style ="color:#4f4f4f;text-align:center;padding:25px;">M o b i l e    U u r k a</h1> 
+                </div> 
+            '''
 
-    st.markdown(predictor_heading, unsafe_allow_html = True) 
+    st.markdown(heading, unsafe_allow_html = True)
 
-    with st.expander('Patient Details'):
-        patient_name = st.text_input(label = 'Enter patient name')
-        patient_number = st.text_input(label = 'Enter patient number')
+    st.write("")
+    
+    img = Image.open('logo2.png')
+    p, q ,r = st.columns(3)
+    with q:
+        st.image(img)
 
-    with st.expander('Single Patient Predictions'):
+    st.write("")
 
-        systolic_bp = st.slider('Select Systolic BP', min_value = 70, max_value = 160, step = 1)
-        weight = st.number_input('Enter the Weight (kg) of the Patient', step = 1)
-        bmi = st.number_input("Enter the BMI of patient", step = 0.5)
-        age = st.slider('Select the Age of patient', min_value = 10, max_value = 70, step = 1)
-        stillborn = st.selectbox("Stillborn", ('Yes', 'No'))
-        blood_sugar = st.number_input('Select Blood Sugar levels of patient', min_value = 5.9, max_value = 34.6)
-        body_temp = st.number_input("Enter the body temperature of patient", step = 0.5)
-        miscarriage = st.selectbox("Miscarriage", ("Yes", "No"))
-        parity = st.number_input("Parity", step = 1)
-        gravida = st.number_input("Gravida", step = 1)
+    with st.expander('Patient Predictions'):
+
+        x, y = st.columns(2, gap = 'medium')
+
+        with x:
+            st.header("History")
+            parity = st.number_input("Parity", step = 1)
+            gravida = st.number_input("Gravida", step = 1, min_value = 1)
+            age = st.slider('Select the Age of patient', min_value = 15, max_value = 70, step = 1)
+            miscarriage = st.radio("Previous Miscarriage?", ("Yes", "No"))
+            stillborn = st.radio("Stillborn?", ('Yes', 'No'))
+
+        with y:
+            st.header("Examination")
+            weight = st.number_input('Weight (kg)', step = 1, min_value = 30)
+            bmi = st.number_input("BMI", step = 0.5, min_value = 15.0)
+            systolic_bp = st.slider('Systolic BP', min_value = 70, max_value = 160, step = 1)
+            blood_sugar = st.number_input('Blood Sugar Level', min_value = 5.9, max_value = 34.6)
+            body_temp = st.number_input("Body Temperature (°F)", step = 0.5, min_value = 90.0)   
         
         feature_names = ['systolic_bp', 'weight', 'bmi', 'age', 'stillborn', 'blood_sugar', 'body_temp', 'miscarriage', 'parity', 'gravida']
         feature_values = [systolic_bp, weight, bmi, age, stillborn, blood_sugar, body_temp, miscarriage, parity, gravida]
@@ -155,6 +168,8 @@ def main():
 
         res_text = convertor(result)
 
+        st.write("Click to make predictions")
+
         # When 'Predict' is clicked, make the prediction and store it 
         if st.button("Predict"):             
             if result == 0:
@@ -166,28 +181,27 @@ def main():
             
             single_patient_explainer(exp_df)
         
-        if st.button('WhatsApp Patient'):
-            send_alert(patient_name, res_text)
+        # if st.button('WhatsApp Patient'):
+        #     send_alert("Patient XYZ", res_text)
 
 
-    with st.expander("Multiple Patient Predictions"):
+    with st.expander("Patients Report"):
         uploader = st.file_uploader("Upload the patient sheet")
         if uploader:
             df = pd.read_excel(uploader)
-            if st.button("View Data"):
+            batch_predictor(df)
+            
+            if st.button("Single Patient Results"):
+
                 st.dataframe(df)
-            if st.button("Make Batch Predictions"):
-                batch_predictor(df)
+                names = tuple(df['name'])
 
-            names = tuple(df['name'])
+                st.markdown("<h5 style='text-align: center; padding: 12px;color: #4f4f4f;'>Single Patient Model Explanation</h5>",
+                                unsafe_allow_html = True)
+                    
+                single_patient = st.selectbox('Select Patient', names)
 
-            st.markdown("<h5 style='text-align: center; padding: 12px;color: #4f4f4f;'>Single Patient Model Explanation</h5>",
-                            unsafe_allow_html = True)
-                
-            single_patient = st.selectbox('Select Patient', names)
-
-            if st.button("Show Results"):
-                display_single_shap(df, single_patient)
+                display_single_shap(df, single_patient)                
                 
 
 
