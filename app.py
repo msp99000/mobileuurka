@@ -205,7 +205,7 @@ def main():
             single_patient = st.selectbox('Select Patient', names)
             st.write(" ")
 
-            if st.button("Show Results"):
+            if st.button("Explain"):
                 display_single_shap(df, single_patient)                
 
 if __name__=='__main__': 
