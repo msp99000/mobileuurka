@@ -135,12 +135,10 @@ def main():
                 <h1 style ="color:#4f4f4f;text-align:center;padding:25px;">M o b i l e    U u r k a</h1> 
                 </div> 
             '''
-
     st.markdown(heading, unsafe_allow_html = True)
-
     st.write("")
-    
     img = Image.open('logo.png')
+    
     p, q ,r = st.columns(3)
     with q:
         st.image(img)
@@ -148,9 +146,7 @@ def main():
     st.write("")
 
     with st.expander('Patient Predictions'):
-
         x, y = st.columns(2, gap = 'medium')
-
         with x:
             st.header("History")
             parity = st.number_input("Parity", step = 1)
@@ -158,14 +154,13 @@ def main():
             age = st.slider('Select the Age of patient', min_value = 15, max_value = 70, step = 1)
             miscarriage = st.radio("Previous Miscarriage?", ("Yes", "No"))
             stillborn = st.radio("Stillborn?", ('Yes', 'No'))
-
         with y:
             st.header("Examination")
             weight = st.number_input('Weight (kg)', step = 1, min_value = 30)
             bmi = st.number_input("BMI", step = 0.5, min_value = 15.0)
-            systolic_bp = st.slider('Systolic BP', min_value = 70, max_value = 160, step = 1)
+            systolic_bp = st.slider('Systolic BP', min_value = 70, max_value = 160, step = 10)
             blood_sugar = st.number_input('Blood Sugar Level', min_value = 5.9, max_value = 34.6)
-            body_temp = st.number_input("Body Temperature (°F)", step = 0.5, min_value = 90.0)   
+            body_temp = st.number_input("Body Temperature (°F)", step = 0.5, min_value = 98.3)   
         
         feature_names = ['systolic_bp', 'weight', 'bmi', 'age', 'stillborn', 'blood_sugar', 'body_temp', 'miscarriage', 'parity', 'gravida']
         feature_values = [systolic_bp, weight, bmi, age, stillborn, blood_sugar, body_temp, miscarriage, parity, gravida]
@@ -194,7 +189,6 @@ def main():
         # if st.button('WhatsApp Patient'):
         #     send_alert("Patient XYZ", res_text)
 
-
     with st.expander("Patients Report"):
         uploader = st.file_uploader("Upload the patient sheet")
         if uploader:
@@ -210,9 +204,6 @@ def main():
 
             if st.button("Show Results"):
                 display_single_shap(df, single_patient)                
-                
-
 
 if __name__=='__main__': 
     main()
-
