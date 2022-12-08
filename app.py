@@ -70,7 +70,7 @@ def batch_predictor(df):
     df['prediction'] = df['prediction'].map({0 : 'Low Risk', 1 : 'High Risk'})
     st.success("Results Generated")
     res_df = df[['name', 'prediction']]
-    x1, x2, x3 = st.columns(3)
+    _, x2, x3, _ = st.columns([0.1, 0.4, 0.4, 0.1], gap = 'medium')
     with x2:
         st.markdown("<h4 style='text-align: left; color: #4f4f4f;'>Model Predictions</h4>",
                 unsafe_allow_html = True)
@@ -78,17 +78,20 @@ def batch_predictor(df):
     comb_df = pd.concat([res_df, proba_df], axis = 1)
     comb_df = comb_df.sort_values(by = ['High Risk %'], ascending = False)
     final_df = comb_df[['name', 'High Risk %']]
+    final_df['High Risk %'] = final_df['High Risk %'].round(2)
+    
+    with x3:
+        st.markdown("<h4 style='text-align: left; color: #4f4f4f;'>Patient Ranking</h4>",
+                unsafe_allow_html = True)
+        st.dataframe(final_df)
+    st.write(" ")
     multi_patient_explainer(temp)
     st.write(" ")
-    st.markdown("<h4 style='text-align: center; color: #4f4f4f;'>Patient Ranking by High Risk %</h4>",
-                unsafe_allow_html = True)
-    x, y, z = st.columns(3)
-    with y:
-        st.dataframe(final_df)
+    
 
 def display_single_shap(df, name):
     st.markdown("<h5 style='text-align: center; padding: 12px;color: #4f4f4f;'>Model Explanation : XAI (Explainable AI)</h5>",
-                            unsafe_allow_html = True)
+                unsafe_allow_html = True)
     temp = df.loc[df['name'] == name]
     res = temp.iloc[:, 1:-1]
     shap.initjs()              
@@ -132,7 +135,7 @@ def main():
     # Front end elements of the web page 
     heading = '''
                 <div> 
-                <h1 style ="color:#4f4f4f;text-align:center;padding:25px;">M o b i l e    U u r k a</h1> 
+                <h1 style ="color:#4f4f4f;text-align:center;padding:25px;">M o b i l e  U u r k a</h1> 
                 </div> 
             '''
     st.markdown(heading, unsafe_allow_html = True)
