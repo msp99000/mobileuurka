@@ -1,3 +1,4 @@
+ipython
 openpyxl
 Pillow
 backend==0.2.4.1
