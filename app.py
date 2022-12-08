@@ -192,17 +192,14 @@ def main():
         if uploader:
             df = pd.read_excel(uploader)
             batch_predictor(df)
-            
-            if st.button("Single Patient Results"):
+            names = tuple(df['name'])
+            st.write(" ")
+            st.markdown("<h4 style='text-align: center; padding: 12px;color: #4f4f4f;'>Single Patient Model Explanation</h4>",
+                        unsafe_allow_html = True)
+            single_patient = st.selectbox('Select Patient', names)
+            st.write(" ")
 
-                st.dataframe(df)
-                names = tuple(df['name'])
-
-                st.markdown("<h5 style='text-align: center; padding: 12px;color: #4f4f4f;'>Single Patient Model Explanation</h5>",
-                                unsafe_allow_html = True)
-                    
-                single_patient = st.selectbox('Select Patient', names)
-
+            if st.button("Show Results"):
                 display_single_shap(df, single_patient)                
                 
 
