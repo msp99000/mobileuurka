@@ -19,7 +19,7 @@ def convertor(x):
     if x == 1:
         return "High Risk"
 
-feature_names = ['SystolicBP', 'Weight (kg)', 'BMI', 'Age', 'stillborn', 'BS (Blood sugar)', 'BodyTemp',  'Miscarriage', 'Parity', 'Gravida']
+feature_names = ['systolic', 'kg', 'bmi', 'age', 'still', 'bs', 'temp',  'miss', 'parity', 'gravida']
 
 def prediction(systolic_bp, weight, bmi, age, stillborn, blood_sugar, body_temp, miscarriage, parity, gravida):   
     if stillborn == 'Yes':
@@ -64,13 +64,13 @@ def multi_patient_explainer(df):
         st.pyplot(shap.plots.bar(shap_values))
 
 def batch_predictor(df):
-    temp = df.iloc[:, 1:]
+    temp = df[feature_names]
     batch_predicitons = model.predict(temp)
     proba_df = pd.DataFrame(model.predict_proba(temp), columns = ['Low Risk %', 'High Risk %'])
     df['prediction'] = batch_predicitons
     df['prediction'] = df['prediction'].map({0 : 'Low Risk', 1 : 'High Risk'})
     st.success("Results Generated")
-    res_df = df[['name', 'prediction']]
+    res_df = df[['patient', 'prediction']]
     _, x2, x3, _ = st.columns([0.1, 0.4, 0.4, 0.1], gap = 'medium')
     with x2:
         st.markdown("<h4 style='text-align: left; color: #4f4f4f;'>Model Predictions</h4>",
@@ -78,7 +78,7 @@ def batch_predictor(df):
         st.dataframe(res_df)
     comb_df = pd.concat([res_df, proba_df], axis = 1)
     comb_df = comb_df.sort_values(by = ['High Risk %'], ascending = False)
-    final_df = comb_df[['name', 'High Risk %']]
+    final_df = comb_df[['patient', 'High Risk %']]
     final_df['High Risk %'] = final_df['High Risk %'].round(2)
     
     with x3:
@@ -86,14 +86,14 @@ def batch_predictor(df):
                 unsafe_allow_html = True)
         st.dataframe(final_df)
     st.write(" ")
-    multi_patient_explainer(temp)
+    # multi_patient_explainer(temp)
     st.write(" ")
     
 
 def display_single_shap(df, name):
     st.markdown("<h5 style='text-align: center; padding: 12px;color: #4f4f4f;'>Patient SHAP Report</h5>",
                 unsafe_allow_html = True)
-    temp = df.loc[df['name'] == name]
+    temp = df.loc[df['patient'] == name]
     res = temp.iloc[:, 1:-1]
     shap.initjs()              
     shap_values = shap.TreeExplainer(model).shap_values(res)              
@@ -199,14 +199,13 @@ def main():
                     single_patient_explainer(sub_comp_df)
 
 
-
-
     with tab1:
         with st.expander("Dataset"):
             uploader = st.file_uploader("Upload the patient sheet")
-            st.session_state.df = uploader
+            st.session_state.df = None
             if uploader:
                 df = pd.read_excel(uploader)
+                st.session_state.df = df
                 batch_predictor(df)
                 names = tuple(df['patient'])
                 
