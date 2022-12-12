@@ -182,7 +182,7 @@ def main():
             st.session_state.new_res = None
             if patient_sheet:
                 data = pd.read_excel(patient_sheet)
-                patient_selector = st.selectbox("Select Patient", tuple(data['patient']))
+                patient_selector = st.selectbox("Select the Patient", tuple(data['patient']))
                 st.session_state.patient_name = patient_selector
                 st.markdown("<h4 style='text-align: center; padding: 12px;color: #4f4f4f;'>Patient Details</h4>",
                             unsafe_allow_html = True)
@@ -201,9 +201,9 @@ def main():
 
 
     with tab1:
+        st.session_state.df = None
         with st.expander("Dataset"):
-            uploader = st.file_uploader("Upload the patient sheet")
-            st.session_state.df = None
+            uploader = st.file_uploader("Upload the patient sheet")     
             if uploader:
                 df = pd.read_excel(uploader)
                 st.session_state.df = df
@@ -226,9 +226,13 @@ def main():
             else:
                 st.error('Upload a sheet to generate Mean SHAP values')
 
-            if st.button("View Patient Data"):
-                res_df_new = pd.read_excel(st.session_state.df)
-                st.dataframe(res_df_new)    
+        with st.expander('Patient Data'):
+            if st.session_state.df is not None:
+                sorted_features = ['prediction', 'patient', 'systolic', 'kg', 'bmi', 'age', 'still', 'bs', 'temp',  'miss', 'parity', 'gravida', 'height', 'diastolic', 'hb', 'gesta']
+                res_df_new = st.session_state.df[sorted_features]
+                st.dataframe(res_df_new)
+            else:
+                st.error('Upload the patient sheet to check data')    
 
 if __name__=='__main__': 
     main()
