@@ -1,7 +1,5 @@
 from sklearn.ensemble import RandomForestClassifier
-import pickle
 import streamlit as st
-import os
 import joblib
 from styles import *
 import pandas as pd
@@ -21,6 +19,8 @@ def convertor(x):
     if x == 1:
         return "High Risk"
 
+feature_names = ['SystolicBP', 'Weight (kg)', 'BMI', 'Age', 'stillborn', 'BS (Blood sugar)', 'BodyTemp',  'Miscarriage', 'Parity', 'Gravida']
+
 def prediction(systolic_bp, weight, bmi, age, stillborn, blood_sugar, body_temp, miscarriage, parity, gravida):   
     if stillborn == 'Yes':
         stillborn = 1
@@ -30,10 +30,7 @@ def prediction(systolic_bp, weight, bmi, age, stillborn, blood_sugar, body_temp,
         miscarriage = 0
     if miscarriage == 'Yes':
         miscarriage = 1
-
-    feature_names = ['SystolicBP', 'Weight (kg)', 'BMI', 'Age', 'stillborn', 'BS (Blood sugar)', 'BodyTemp',  'Miscarriage', 'Parity', 'Gravida']
     temp_df = pd.DataFrame([[systolic_bp, weight, bmi, age, stillborn, blood_sugar, body_temp, miscarriage, parity, gravida]], columns = feature_names)
-
     pred =  model.predict(temp_df)
     return pred[0]
 
@@ -50,7 +47,7 @@ def predict_probability(systolic_bp, weight, bmi, age, stillborn, blood_sugar, b
     return pred_proba
 
 def single_patient_explainer(df):
-    st.markdown("<h5 style='text-align: center; padding: 12px;color: #4f4f4f;'>Model Explanation : XAI (Explainable AI)</h5>",
+    st.markdown("<h3 style='text-align: center; padding: 12px;color: #4f4f4f;'>Patient SHAP Report</h3>",
                             unsafe_allow_html = True)              
     shap.initjs()              
     shap_values = shap.TreeExplainer(model).shap_values(df)              
@@ -94,7 +91,7 @@ def batch_predictor(df):
     
 
 def display_single_shap(df, name):
-    st.markdown("<h5 style='text-align: center; padding: 12px;color: #4f4f4f;'>Model Explanation : XAI (Explainable AI)</h5>",
+    st.markdown("<h5 style='text-align: center; padding: 12px;color: #4f4f4f;'>Patient SHAP Report</h5>",
                 unsafe_allow_html = True)
     temp = df.loc[df['name'] == name]
     res = temp.iloc[:, 1:-1]
@@ -102,38 +99,6 @@ def display_single_shap(df, name):
     shap_values = shap.TreeExplainer(model).shap_values(res)              
     st.pyplot(shap.force_plot(shap.TreeExplainer(model).expected_value[0], shap_values[0], res, matplotlib=True,show=False))  # type: ignore
 
-def send_alert(name, pred):
-    data = f'''{{ "messaging_product" : "whatsapp",
-              "to"       : "xxxxxx",
-              "type"     : "template", 
-              "template" : {{ 
-                            "name"       : "patient_prediction", 
-                            "language"   : {{ "code" : "en_US" }},
-                            "components" : [{{
-                                                 "type"       : "body",
-                                                 "parameters" : [
-                                                                      {{
-                                                                             "type" : "text",
-                                                                             "text" : "{name}"
-                                                                      }},
-                                                                      {{
-                                                                             "type" : "text",
-                                                                             "text" : "{pred}"
-                                                                      }}
-                                                               ]
-                            }}]
-                     }}
-              }}'''
-
-    msg = f"""
-              curl -i -X POST \
-              https://graph.facebook.com/v15.0/xxxxx/messages \
-              -H 'Authorization: Bearer xxxxxxx' \
-              -H 'Content-Type: application/json' \
-              -d '{data}' 
-            """
-    os.system(msg)
-    st.success("WhatsApp Alert sent to the patient")
 
 def main():
     # Front end elements of the web page 
@@ -152,65 +117,114 @@ def main():
 
     st.write("")
 
-    with st.expander('Patient Predictions'):
-        x, y = st.columns(2, gap = 'medium')
-        with x:
-            st.header("History")
-            parity = st.number_input("Parity", step = 1)
-            gravida = st.number_input("Gravida", step = 1, min_value = 1)
-            age = st.slider('Select the Age of patient', min_value = 15, max_value = 70, step = 1)
-            miscarriage = st.radio("Previous Miscarriage?", ("Yes", "No"))
-            stillborn = st.radio("Stillborn?", ('Yes', 'No'))
-        with y:
-            st.header("Examination")
-            weight = st.number_input('Weight (kg)', step = 1, min_value = 30)
-            bmi = st.number_input("BMI", step = 0.5, min_value = 15.0)
-            systolic_bp = st.slider('Systolic BP', min_value = 70, max_value = 160, step = 10)
-            blood_sugar = st.number_input('Blood Sugar Level')
-            body_temp = st.number_input("Body Temperature (°F)", step = 1, min_value = 98)   
-        
-        feature_names = ['systolic_bp', 'weight', 'bmi', 'age', 'stillborn', 'blood_sugar', 'body_temp', 'miscarriage', 'parity', 'gravida']
-        feature_values = [systolic_bp, weight, bmi, age, stillborn, blood_sugar, body_temp, miscarriage, parity, gravida]
+    tab1, tab2 = st.tabs(['Run Report', 'Utilities'])
 
-        result = prediction(systolic_bp, weight, bmi, age, stillborn, blood_sugar, body_temp, miscarriage, parity, gravida)
+    with tab2:
+        with st.expander("Run Model"):
+            x, y = st.columns(2, gap = 'medium')
+            with x:
+                st.header("History")
+                parity = st.number_input("Parity", step = 1, min_value = 0)
+                gravida = st.number_input("Gravida", step = 1, min_value = 1)
+                age = st.slider('Age', min_value = 15, max_value = 70, step = 1)
+                height = st.number_input("Height (cm)", step = 0.1, min_value = 100.0)
+                diastolic_bp = st.number_input("Diastolic BP", step = 0.1, min_value = 20.0)
+                miscarriage = st.radio("Previous Miscarriage?", ("Yes", "No"))
+                stillborn = st.radio("Previous Stillborn?", ('Yes', 'No'))
+                
+            with y:
+                st.header("Examination")
+                weight = st.number_input('Weight (kg)', step = 1, min_value = 30)
+                bmi = st.number_input("BMI", step = 0.5, min_value = 15.0)
+                systolic_bp = st.slider('Systolic BP', min_value = 70, max_value = 160, step = 10)
+                blood_sugar = st.number_input('Blood Sugar', step = 0.1, min_value = 1.0)
+                body_temp = st.number_input("Temperature (°F)", step = 0.5, min_value = 98.3) 
+                hemoglobin = st.number_input("HB (Hemoglobin)", step = 0.1, min_value = 2.0) 
+                gest_weeks = st.number_input("Gestational Weeks", step = 1, min_value = 1)
+            
+            feature_names = ['systolic', 'kg', 'bmi', 'age', 'still', 'bs', 'temp', 'miss', 'parity', 'gravida']
+            feature_values = [systolic_bp, weight, bmi, age, stillborn, blood_sugar, body_temp, miscarriage, parity, gravida]
 
-        exp_df = pd.DataFrame([feature_values], columns = feature_names)
-        exp_df['stillborn'] = exp_df['stillborn'].map({'No' : 0, 'Yes' :1})
-        exp_df['miscarriage'] = exp_df['miscarriage'].map({'No' : 0, 'Yes' :1})
+            result = prediction(systolic_bp, weight, bmi, age, stillborn, blood_sugar, body_temp, miscarriage, parity, gravida)
 
-        res_text = convertor(result)
+            exp_df = pd.DataFrame([feature_values], columns = feature_names)
+            exp_df['still'] = exp_df['still'].map({'No' : 0, 'Yes' :1})
+            exp_df['miss'] = exp_df['miss'].map({'No' : 0, 'Yes' :1})
 
-        st.write("Click to make predictions")
+            st.write(" ")
 
-        # When 'Predict' is clicked, make the prediction and store it 
-        if st.button("Predict"):             
-            if result == 0:
-                st.markdown("<h1 style='text-align: center; color: #468189;'>The patient is at Low Risk</h1>",
-                            unsafe_allow_html = True)           
-            if result == 1:
-                st.markdown("<h1 style='text-align: center; color: #468189;'>The patient is at High Risk</h1>",
+            st.session_state.res = None
+
+            # When 'Predict' is clicked, make the prediction and store it 
+            if st.button("Predict"):             
+                if result == 0:
+                    st.markdown("<h1 style='text-align: center; color: #468189;'>The patient is at Low Risk</h1>",
+                                unsafe_allow_html = True)  
+                    st.session_state.res = 0         
+                if result == 1:
+                    st.markdown("<h1 style='text-align: center; color: #468189;'>The patient is at High Risk</h1>",
+                                unsafe_allow_html = True)
+                    st.session_state.res = 1
+            
+            st.write(" ")
+
+        with st.expander("Dataset SHAP Report"):
+            if st.session_state.res is not None:
+                single_patient_explainer(exp_df)    
+            else:
+                st.error("Make a patient prediction first. (Hint : Enter values and hit the 'Predict' button) ")
+            
+        with st.expander("Data Chooser"):
+            patient_sheet = st.file_uploader("Upload Patient Sheet")
+            st.session_state.single_patient_res = patient_sheet
+            st.session_state.patient_name = None
+            st.session_state.new_res = None
+            if patient_sheet:
+                data = pd.read_excel(patient_sheet)
+                patient_selector = st.selectbox("Select Patient", tuple(data['patient']))
+                st.session_state.patient_name = patient_selector
+                st.markdown("<h4 style='text-align: center; padding: 12px;color: #4f4f4f;'>Patient Details</h4>",
                             unsafe_allow_html = True)
-            
-            single_patient_explainer(exp_df)
-        
-        # if st.button('WhatsApp Patient'):
-        #     send_alert("Patient XYZ", res_text)
+                comp_df = data.loc[data['patient'] == patient_selector]
+                st.dataframe(comp_df.set_index('patient').T, width = 200)
+                sub_comp_df = comp_df[feature_names]
+                if st.button("Make Prediction"):
+                    new_res = model.predict(sub_comp_df)
+                    if new_res == 0:
+                        st.markdown("<h1 style='text-align: center; color: #468189;'>The patient is at Low Risk</h1>",
+                                    unsafe_allow_html = True)  
+                    if new_res == 1:
+                        st.markdown("<h1 style='text-align: center; color: #468189;'>The patient is at High Risk</h1>",
+                                    unsafe_allow_html = True)
+                    single_patient_explainer(sub_comp_df)
 
-    with st.expander("Patients Report"):
-        uploader = st.file_uploader("Upload the patient sheet")
-        if uploader:
-            df = pd.read_excel(uploader)
-            batch_predictor(df)
-            names = tuple(df['name'])
-            
-            st.write(" ")
-            st.markdown("<h4 style='text-align: center; padding: 12px;color: #4f4f4f;'>Single Patient Model Explanation</h4>",
-                        unsafe_allow_html = True)
-            single_patient = st.selectbox('Select Patient', names)
-            st.write(" ")
 
-            if st.button("Explain"):
-                display_single_shap(df, single_patient)                
+
+
+    with tab1:
+        with st.expander("Dataset"):
+            uploader = st.file_uploader("Upload the patient sheet")
+            st.session_state.df = uploader
+            if uploader:
+                df = pd.read_excel(uploader)
+                batch_predictor(df)
+                names = tuple(df['patient'])
+                
+                st.write(" ")
+                st.markdown("<h4 style='text-align: center; padding: 12px;color: #4f4f4f;'>Single Patient Explanation</h4>",
+                            unsafe_allow_html = True)
+                single_patient = st.selectbox('Select Patient', names)
+                st.write(" ")
+
+                if st.button("Explain"):
+                    display_single_shap(df, single_patient)  
+
+        with st.expander("Data Model Analysis"):
+            st.write("Patient") 
+
+            if st.button("View Patient Data"):
+                res_df_new = pd.read_excel(st.session_state.df)
+                st.dataframe(res_df_new)    
 
 if __name__=='__main__': 
     main()
