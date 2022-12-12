@@ -10,7 +10,7 @@ def streamlit_style():
 
     st.set_page_config(initial_sidebar_state = "collapsed", layout = 'centered', page_icon = 'logo.png', page_title = 'Mobile Uurka')
 
-    st.write('<style>div.block-container{padding-top:0rem;}</style>', unsafe_allow_html=True)
+    st.markdown('<style> div.block-container{padding-top:0rem;} </style>', unsafe_allow_html=True)
 
     st.markdown("""
                 <style>
