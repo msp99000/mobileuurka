@@ -56,7 +56,7 @@ def single_patient_explainer(df):
 def multi_patient_explainer(df):
     y1, y2, y3 = st.columns([0.1, 0.8, 0.1])
     with y2:
-        st.markdown("<h4 style='text-align: center; padding: 12px;color: #4f4f4f;'>Model Explanation : XAI (Explainable AI)</h4>",
+        st.markdown("<h4 style='text-align: center; padding: 12px;color: #4f4f4f;'>Mean SHAP values for current dataset</h4>",
                                 unsafe_allow_html = True)
         explainer = shap.Explainer(model.predict, df)
         shap_values = explainer(df)
@@ -71,20 +71,21 @@ def batch_predictor(df):
     df['prediction'] = df['prediction'].map({0 : 'Low Risk', 1 : 'High Risk'})
     st.success("Results Generated")
     res_df = df[['patient', 'prediction']]
-    _, x2, x3, _ = st.columns([0.1, 0.4, 0.4, 0.1], gap = 'medium')
-    with x2:
-        st.markdown("<h4 style='text-align: left; color: #4f4f4f;'>Model Predictions</h4>",
-                unsafe_allow_html = True)
-        st.dataframe(res_df)
+    # _, x2, x3, _ = st.columns([0.1, 0.4, 0.4, 0.1], gap = 'medium')
+    # with x2:
+    #     st.markdown("<h4 style='text-align: left; color: #4f4f4f;'>Model Predictions</h4>",
+    #             unsafe_allow_html = True)
+    #     st.dataframe(res_df)
     comb_df = pd.concat([res_df, proba_df], axis = 1)
     comb_df = comb_df.sort_values(by = ['High Risk %'], ascending = False)
     final_df = comb_df[['patient', 'High Risk %']]
     final_df['High Risk %'] = final_df['High Risk %'].round(2)
+    final_df.columns = ['Patient Name', 'Risk']
     
-    with x3:
-        st.markdown("<h4 style='text-align: left; color: #4f4f4f;'>Patient Ranking</h4>",
-                unsafe_allow_html = True)
-        st.dataframe(final_df)
+    # with x3:
+    st.markdown("<h4 style='text-align: left; color: #4f4f4f;'>Model Predictions</h4>",
+            unsafe_allow_html = True)
+    st.dataframe(final_df)
     st.write(" ")
     # multi_patient_explainer(temp)
     st.write(" ")
@@ -219,7 +220,11 @@ def main():
                     display_single_shap(df, single_patient)  
 
         with st.expander("Data Model Analysis"):
-            st.write("Patient") 
+            if st.session_state.df is not None:
+                mul_res = st.session_state.df[feature_names]
+                multi_patient_explainer(mul_res)          
+            else:
+                st.error('Upload a sheet to generate Mean SHAP values')
 
             if st.button("View Patient Data"):
                 res_df_new = pd.read_excel(st.session_state.df)
