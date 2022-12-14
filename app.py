@@ -120,6 +120,33 @@ def main():
 
     tab1, tab2 = st.tabs(['Run Report', 'Utilities'])
 
+    with tab1:
+        st.session_state.df = None
+        with st.expander("Dataset"):
+            uploader = st.file_uploader("Upload the patient sheet")     
+            if uploader:
+                df = pd.read_excel(uploader)
+                st.session_state.df = df
+                batch_predictor(df)
+                names = tuple(df['patient'])
+                
+                st.write(" ")
+                st.markdown("<h4 style='text-align: center; padding: 12px;color: #4f4f4f;'>Single Patient Explanation</h4>",
+                            unsafe_allow_html = True)
+                single_patient = st.selectbox('Select Patient', names)
+                st.write(" ")
+
+                if st.button("Explain"):
+                    display_single_shap(df, single_patient)  
+
+        with st.expander('Patient Data'):
+            if st.session_state.df is not None:
+                sorted_features = ['prediction', 'patient', 'systolic', 'kg', 'bmi', 'age', 'still', 'bs', 'temp',  'miss', 'parity', 'gravida', 'height', 'diastolic', 'hb', 'gesta']
+                res_df_new = st.session_state.df[sorted_features]
+                st.dataframe(res_df_new)
+            else:
+                st.error('Upload the patient sheet to check data') 
+
     with tab2:
         with st.expander("Run Model"):
             x, y = st.columns(2, gap = 'medium')
@@ -199,40 +226,13 @@ def main():
                                     unsafe_allow_html = True)
                     single_patient_explainer(sub_comp_df)
 
-
-    with tab1:
-        st.session_state.df = None
-        with st.expander("Dataset"):
-            uploader = st.file_uploader("Upload the patient sheet")     
-            if uploader:
-                df = pd.read_excel(uploader)
-                st.session_state.df = df
-                batch_predictor(df)
-                names = tuple(df['patient'])
-                
-                st.write(" ")
-                st.markdown("<h4 style='text-align: center; padding: 12px;color: #4f4f4f;'>Single Patient Explanation</h4>",
-                            unsafe_allow_html = True)
-                single_patient = st.selectbox('Select Patient', names)
-                st.write(" ")
-
-                if st.button("Explain"):
-                    display_single_shap(df, single_patient)  
-
         with st.expander("Data Model Analysis"):
             if st.session_state.df is not None:
                 mul_res = st.session_state.df[feature_names]
                 multi_patient_explainer(mul_res)          
             else:
                 st.error('Upload a sheet to generate Mean SHAP values')
-
-        with st.expander('Patient Data'):
-            if st.session_state.df is not None:
-                sorted_features = ['prediction', 'patient', 'systolic', 'kg', 'bmi', 'age', 'still', 'bs', 'temp',  'miss', 'parity', 'gravida', 'height', 'diastolic', 'hb', 'gesta']
-                res_df_new = st.session_state.df[sorted_features]
-                st.dataframe(res_df_new)
-            else:
-                st.error('Upload the patient sheet to check data')    
+   
 
 if __name__=='__main__': 
     main()
