@@ -189,7 +189,6 @@ def main():
                 gravida = st.number_input("Gravida", step = 1, min_value = 1)
                 age = st.slider('Age', min_value = 15, max_value = 70, step = 1)
                 height = st.number_input("Height (cm)", step = 0.1, min_value = 100.0)
-                diastolic_bp = st.number_input("Diastolic BP", step = 0.1, min_value = 20.0)
                 miscarriage = st.radio("Previous Miscarriage?", ("Yes", "No"))
                 stillborn = st.radio("Previous Stillborn?", ('Yes', 'No'))
                 
@@ -198,6 +197,7 @@ def main():
                 weight = st.number_input('Weight (kg)', step = 1, min_value = 30)
                 bmi = st.number_input("BMI", step = 0.5, min_value = 15.0)
                 systolic_bp = st.slider('Systolic BP', min_value = 70, max_value = 160, step = 10)
+                diastolic_bp = st.slider("Diastolic BP", step = 10, min_value = 20, max_value = 100)
                 blood_sugar = st.number_input('Blood Sugar', step = 0.1, min_value = 1.0)
                 body_temp = st.number_input("Temperature (°F)", step = 0.5, min_value = 98.3) 
                 hemoglobin = st.number_input("HB (Hemoglobin)", step = 0.1, min_value = 2.0) 
