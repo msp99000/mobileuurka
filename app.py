@@ -50,7 +50,22 @@ def single_patient_explainer(df):
                             unsafe_allow_html = True)              
     shap.initjs()              
     shap_values = shap.TreeExplainer(model).shap_values(df)              
-    st.pyplot(shap.force_plot(shap.TreeExplainer(model).expected_value[1], shap_values[1], df, matplotlib=True,show=False))  # type: ignore
+    # st.pyplot(shap.force_plot(shap.TreeExplainer(model).expected_value[1], shap_values[1], df, matplotlib = True, show = True))
+
+    shap_exp_df = pd.DataFrame(shap_values[1])
+    shap_exp_df = shap_exp_df.iloc[:, 0:10]
+    shap_exp_df.columns = feature_names
+    _, c1, _ = st.columns([0.04, 0.92, 0.04])
+    with c1:
+        st.markdown("<h5 style='text-align: center; padding: 12px;color: #2a9d8f;'>Shapley Values Table</h5>",
+                unsafe_allow_html = True)
+        st.write("")
+        st.write(shap_exp_df)
+        st.write("")
+        st.markdown("<h5 style='text-align: center; padding: 12px;color: #2a9d8f;'>SHAP Tree Explainer Plot</h5>",
+                unsafe_allow_html = True)
+        st.write("")
+    st.pyplot(shap.force_plot(shap.TreeExplainer(model).expected_value[1], shap_values[1], df, matplotlib = True, show = True))
 
 def multi_patient_explainer(df):
     y1, y2, y3 = st.columns([0.1, 0.8, 0.1])
@@ -73,9 +88,10 @@ def batch_predictor(df):
    
     comb_df = pd.concat([res_df, proba_df], axis = 1)
     comb_df = comb_df.sort_values(by = ['High Risk %'], ascending = False)
+    st.write(comb_df)
     final_df = comb_df[['patient', 'High Risk %']]
     final_df['High Risk %'] = final_df['High Risk %'].round(2)
-    final_df.columns = ['Patient Name', 'Risk']
+    final_df.columns = ['Patient', 'Risk']
     
     st.markdown("<h4 style='text-align: left; color: #4f4f4f;'>Model Predictions</h4>",
             unsafe_allow_html = True)
@@ -105,7 +121,7 @@ def display_single_shap(df, name):
         st.markdown("<h5 style='text-align: center; padding: 12px;color: #2a9d8f;'>SHAP Tree Explainer Plot</h5>",
                 unsafe_allow_html = True)
         st.write("")
-    st.pyplot(shap.force_plot(shap.TreeExplainer(model).expected_value[1], shap_values[1], res, matplotlib = True, show = True))  # type: ignore
+    st.pyplot(shap.force_plot(shap.TreeExplainer(model).expected_value[1], shap_values[1], res, matplotlib = True, show = True))
 
 
 def main():
