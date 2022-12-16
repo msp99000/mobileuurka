@@ -83,14 +83,23 @@ def batch_predictor(df):
     df['prediction'] = df['prediction'].map({0 : 'Low Risk', 1 : 'High Risk'})
     st.success("Results Generated")
     sort_features = ['prediction', 'patient', 'risk', 'systolic', 'kg', 'bmi', 'age', 'still', 'bs', 'temp',  'miss', 'parity', 'gravida', 'height', 'diastolic', 'hb', 'gesta']
-    # st.dataframe(df)
-    # res_df = df[['patient', 'prediction']]
+    
     comb_df = pd.concat([df, proba_df], axis = 1)
     comb_df = comb_df[sort_features]
     comb_df.index = comb_df.index + 1
+
+    # predictions_df = comb_df[['patient', 'prediction']]
+
+    # plot_df = comb_df[['patient', 'risk']]
+
     st.markdown("<h4 style='text-align: center; color: #4f4f4f;'>Model Predictions</h4>",
             unsafe_allow_html = True)
+    st.write("")
+    # st.dataframe(predictions_df)
+
     st.dataframe(comb_df)
+    # plt.bar(height = plot_df['patient'], x = plot_df['risk'], orientation = 'horizontal')
+    # st.pyplot()
     # comb_df = comb_df.sort_values(by = ['High Risk %'], ascending = False)
     # final_df = comb_df[['patient', 'High Risk %']]
     # final_df.columns = ['Patient', 'Risk']
