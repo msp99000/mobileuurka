@@ -88,7 +88,6 @@ def batch_predictor(df):
    
     comb_df = pd.concat([res_df, proba_df], axis = 1)
     comb_df = comb_df.sort_values(by = ['High Risk %'], ascending = False)
-    st.write(comb_df)
     final_df = comb_df[['patient', 'High Risk %']]
     final_df['High Risk %'] = final_df['High Risk %'].round(2)
     final_df.columns = ['Patient', 'Risk']
