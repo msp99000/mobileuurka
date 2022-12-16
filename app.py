@@ -174,7 +174,7 @@ def main():
 
         with st.expander('Patient Data'):
             if st.session_state.df is not None:
-                sorted_features = ['prediction', 'patient', 'systolic', 'kg', 'bmi', 'age', 'still', 'bs', 'temp',  'miss', 'parity', 'gravida', 'height', 'diastolic', 'hb', 'gesta']
+                sorted_features = ['patient', 'systolic', 'kg', 'bmi', 'age', 'still', 'bs', 'temp',  'miss', 'parity', 'gravida', 'height', 'diastolic', 'hb', 'gesta']
                 res_df_new = st.session_state.df[sorted_features]
                 st.dataframe(res_df_new)
             else:
