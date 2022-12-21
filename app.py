@@ -134,6 +134,13 @@ def main():
                 st.session_state["password_correct"] = False
 
         if "password_correct" not in st.session_state:
+
+            heading = '''
+                    <div> 
+                    <h4 style ="color:#4f4f4f;text-align:center;padding:25px;">Enter password to proceed</h4> 
+                    </div> 
+                '''
+
             # First run, show input for password.
             st.text_input(
                 "Password", type="password", on_change=password_entered, key="password"
@@ -148,6 +155,7 @@ def main():
             return False
         else:
             # Password correct.
+            st.success("Success!")
             return True
 
     if check_password():
@@ -281,6 +289,7 @@ def main():
                     multi_patient_explainer(mul_res)          
                 else:
                     st.error('Upload a sheet to generate Mean SHAP values')
+
    
 
 if __name__=='__main__': 
