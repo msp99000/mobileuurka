@@ -135,12 +135,6 @@ def main():
 
         if "password_correct" not in st.session_state:
 
-            heading = '''
-                    <div> 
-                    <h4 style ="color:#4f4f4f;text-align:center;padding:25px;">Enter password to proceed</h4> 
-                    </div> 
-                '''
-
             # First run, show input for password.
             st.text_input(
                 "Password", type="password", on_change=password_entered, key="password"
@@ -155,7 +149,6 @@ def main():
             return False
         else:
             # Password correct.
-            st.success("Success!")
             return True
 
     if check_password():
