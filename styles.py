@@ -1,6 +1,4 @@
 import streamlit as st
-import streamlit.components.v1 as components
-
 
 # ---- HIDE STREAMLIT STYLE ----
 
@@ -32,17 +30,3 @@ def streamlit_style():
 
             </script>    
             """
-
-    # st.markdown(""" 
-    #             <style>
-    #             div.stButton > button:first-child {
-    #             background-color: #2a9d8f; 
-    #             color:white; 
-    #             font-size:14px; 
-    #             height:3em; 
-    #             text-align:center; 
-    #             width:10em; 
-    #             border-radius:40px 40px 40px 40px;ß
-    #             }
-    #             </style>
-    #             """, unsafe_allow_html=True)
